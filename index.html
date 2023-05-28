@@ -1,20 +1,32 @@
-<!DOCTYPE html>
-<html ng-app="LunchCheckApp">
-
+<!doctype html>
+<html lang="en" ng-app="LunchCheckerApp">
 <head>
-  <meta charset="utf-8">
-  <title>Lunch Check</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-  <script src="app.js"></script>
+  <title>Lunch Checker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles/bootstrap.min.css">
+  <style>
+    .message { font-size: 1.3em; font-weight: bold; }
+  </style>
 </head>
+<body ng-controller="LunchCheckerController">
+  <div class="container">
+    <h1>Lunch Checker</h1>
 
-<body ng-controller="LunchCheckController">
-  <h1>Lunch Check</h1>
-  <div>
-    <input type="text" ng-model="lunchItems" placeholder="Enter comma-separated items" />
-    <button ng-click="checkLunch()">Check If Too Much</button>
-    <p>{{ message }}</p>
+    <div class="form-group">
+      <input id="lunch-menu" type="text" ng-model="lunchMenu"
+             placeholder="list comma-separated dishes you usually have for lunch"
+             class="form-control">
+      <p class="help-block">Please note that empty items (e.g., , ,) will not be counted as valid items.</p>
+    </div>
+    <div class="form-group">
+      <button id="check-btn" class="btn btn-default" ng-click="checkLunchMenu()">Check If Too Much</button>
+    </div>
+    <div class="form-group message">
+      <p ng-show="message">{{ message }}</p>
+    </div>
   </div>
-</body>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+  <script src="app.js"></script>
+</body>
 </html>
