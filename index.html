@@ -1,32 +1,36 @@
-<!doctype html>
-<html lang="en" ng-app="LunchCheckerApp">
-<head>
-  <title>Lunch Checker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="styles/bootstrap.min.css">
-  <style>
-    .message { font-size: 1.3em; font-weight: bold; }
-  </style>
-</head>
-<body ng-controller="LunchCheckerController">
-  <div class="container">
-    <h1>Lunch Checker</h1>
+<!DOCTYPE html>
+<html ng-app="ShoppingListApp">
 
-    <div class="form-group">
-      <input id="lunch-menu" type="text" ng-model="lunchMenu"
-             placeholder="list comma-separated dishes you usually have for lunch"
-             class="form-control">
-      <p class="help-block">Please note that empty items (e.g., , ,) will not be counted as valid items.</p>
-    </div>
-    <div class="form-group">
-      <button id="check-btn" class="btn btn-default" ng-click="checkLunchMenu()">Check If Too Much</button>
-    </div>
-    <div class="form-group message">
-      <p ng-show="message">{{ message }}</p>
-    </div>
+<head>
+  <title>Shopping List</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="app.js"></script>
+</head>
+
+<body ng-controller="ShoppingListController as vm">
+  <h1>Shopping List</h1>
+
+  <div class="list-container">
+    <h2>To Buy</h2>
+    <ul>
+      <li ng-repeat="item in vm.toBuyList">
+        Buy {{ item.quantity }} {{ item.name }}
+        <button ng-click="vm.buyItem($index)">Bought</button>
+      </li>
+    </ul>
+    <p ng-if="vm.isToBuyListEmpty()">Everything is bought!</p>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
-  <script src="app.js"></script>
+  <div class="list-container">
+    <h2>Already Bought</h2>
+    <p ng-if="vm.isAlreadyBoughtListEmpty()">Nothing bought yet.</p>
+    <ul>
+      <li ng-repeat="item in vm.alreadyBoughtList">
+        Bought {{ item.quantity }} {{ item.name }}
+      </li>
+    </ul>
+  </div>
 </body>
+
 </html>
