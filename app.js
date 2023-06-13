@@ -37,7 +37,7 @@
     service.getMatchedMenuItems = function(searchTerm) {
       return $http({
         method: 'GET',
-        url: 'https://www.elegantthemes.com/blog/resources/tasty-examples-of-restaurant-menu-design-on-the-web#1-mugs'
+        url: 'http://davids-restaurant.herokuapp.com/menu_items.json'
       })
       .then(function(response) {
         var foundItems = [];
