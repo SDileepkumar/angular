@@ -1,32 +1,57 @@
-angular.module('ShoppingListApp', [])
-  .controller('ShoppingListController', ShoppingListController);
+(function() {
+  'use strict';
 
-ShoppingListController.$inject = ['$scope'];
+  angular.module('MenuSearchApp', [])
+    .controller('MenuSearchController', MenuSearchController)
+    .service('MenuSearchService', MenuSearchService);
 
-function ShoppingListController($scope) {
-  var vm = this;
+  MenuSearchController.$inject = ['MenuSearchService'];
+  function MenuSearchController(MenuSearchService) {
+    var menuCtrl = this;
+    menuCtrl.searchTerm = '';
+    menuCtrl.foundItems = [];
 
-  vm.toBuyList = [
-    { name: 'Cookies', quantity: 10 },
-    { name: 'Milk', quantity: 2 },
-    { name: 'Bread', quantity: 3 },
-    { name: 'Eggs', quantity: 6 },
-    { name: 'Apples', quantity: 5 }
-  ];
+    menuCtrl.narrowDown = function() {
+      if (menuCtrl.searchTerm.trim() !== '') {
+        var promise = MenuSearchService.getMatchedMenuItems(menuCtrl.searchTerm);
+        promise.then(function(response) {
+          menuCtrl.foundItems = response;
+        })
+        .catch(function(error) {
+          console.log('Error:', error);
+        });
+      } else {
+        menuCtrl.foundItems = [];
+      }
+    };
 
-  vm.alreadyBoughtList = [];
+    menuCtrl.removeItem = function(index) {
+      menuCtrl.foundItems.splice(index, 1);
+    };
+  }
 
-  vm.buyItem = function(index) {
-    var item = vm.toBuyList[index];
-    vm.toBuyList.splice(index, 1);
-    vm.alreadyBoughtList.push(item);
-  };
+  MenuSearchService.$inject = ['$http'];
+  function MenuSearchService($http) {
+    var service = this;
 
-  vm.isToBuyListEmpty = function() {
-    return vm.toBuyList.length === 0;
-  };
+    service.getMatchedMenuItems = function(searchTerm) {
+      return $http({
+        method: 'GET',
+        url: 'https://www.elegantthemes.com/blog/resources/tasty-examples-of-restaurant-menu-design-on-the-web#1-mugs'
+      })
+      .then(function(response) {
+        var foundItems = [];
+        var menuItems = response.data;
 
-  vm.isAlreadyBoughtListEmpty = function() {
-    return vm.alreadyBoughtList.length === 0;
-  };
-}
+        for (var i = 0; i < menuItems.length; i++) {
+          var description = menuItems[i].description;
+          if (description.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1) {
+            foundItems.push(menuItems[i]);
+          }
+        }
+
+        return foundItems;
+      });
+    };
+  }
+})();

@@ -1,36 +1,34 @@
-<!DOCTYPE html>
-<html ng-app="ShoppingListApp">
-
+<!doctype html>
+<html lang="en" ng-app="MenuSearchApp">
 <head>
-  <title>Shopping List</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
+  <meta charset="utf-8">
+  <title>Narrow Down Your Menu Choice</title>
+  <link rel="stylesheet" href="styles/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/styles.css">
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <script src="app.js"></script>
 </head>
+<body ng-controller="MenuSearchController as menuCtrl">
+  <div class="container">
+    <h1>Narrow Down Your Menu Choice</h1>
 
-<body ng-controller="ShoppingListController as vm">
-  <h1>Shopping List</h1>
+    <div class="form-group">
+      <input type="text" placeholder="Search term" class="form-control" ng-model="menuCtrl.searchTerm">
+    </div>
+    <div class="form-group narrow-button">
+      <button class="btn btn-primary" ng-click="menuCtrl.narrowDown()">Narrow It Down For Me!</button>
+    </div>
 
-  <div class="list-container">
-    <h2>To Buy</h2>
-    <ul>
-      <li ng-repeat="item in vm.toBuyList">
-        Buy {{ item.quantity }} {{ item.name }}
-        <button ng-click="vm.buyItem($index)">Bought</button>
+    <ul ng-if="menuCtrl.foundItems.length > 0">
+      <li ng-repeat="item in menuCtrl.foundItems">
+        {{ item.name }}, {{ item.short_name }}, {{ item.description }}
+        <button class="btn btn-danger" ng-click="menuCtrl.removeItem($index)">Don't want this one!</button>
       </li>
     </ul>
-    <p ng-if="vm.isToBuyListEmpty()">Everything is bought!</p>
-  </div>
 
-  <div class="list-container">
-    <h2>Already Bought</h2>
-    <p ng-if="vm.isAlreadyBoughtListEmpty()">Nothing bought yet.</p>
-    <ul>
-      <li ng-repeat="item in vm.alreadyBoughtList">
-        Bought {{ item.quantity }} {{ item.name }}
-      </li>
-    </ul>
+    <div ng-if="menuCtrl.foundItems.length === 0 && menuCtrl.searchTerm !== ''">
+      Nothing found
+    </div>
   </div>
 </body>
-
 </html>
