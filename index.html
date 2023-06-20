@@ -1,34 +1,65 @@
-<!doctype html>
-<html lang="en" ng-app="MenuSearchApp">
+<!DOCTYPE html>
+<html ng-app="restaurantApp">
+
 <head>
-  <meta charset="utf-8">
-  <title>Narrow Down Your Menu Choice</title>
-  <link rel="stylesheet" href="styles/bootstrap.min.css">
-  <link rel="stylesheet" href="styles/styles.css">
+  <title>Restaurant App</title>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-  <script src="app.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+  <script>
+    var app = angular.module('restaurantApp', ['ngRoute']);
+
+    app.config(function($routeProvider) {
+      $routeProvider
+        .when('/', {
+          template: '<h2>Welcome to our Restaurant</h2><p><a ng-href="#/categories">View Categories</a></p>'
+        })
+        .when('/categories', {
+          template: '<h2>Categories</h2><ul><li ng-repeat="category in categories"><a ng-href="#/items/{{category.id}}">{{category.name}}</a></li></ul>',
+          controller: 'CategoriesController'
+        })
+        .when('/items/:categoryId', {
+          template: '<h2>Items in {{selectedCategory.name}}</h2><ul><li ng-repeat="item in items">{{item.name}} - {{item.price}}</li></ul>',
+          controller: 'ItemsController'
+        })
+        .otherwise({
+          redirectTo: '/'
+        });
+    });
+
+    app.controller('CategoriesController', function($scope, $http, $routeParams) {
+      $http.get('API_URL/categories')
+        .then(function(response) {
+          $scope.categories = response.data;
+        })
+        .catch(function(error) {
+          console.error('Error fetching categories:', error);
+        });
+    });
+
+    app.controller('ItemsController', function($scope, $http, $routeParams) {
+      var categoryId = $routeParams.categoryId;
+
+      $http.get('API_URL/items?categoryId=' + categoryId)
+        .then(function(response) {
+          $scope.items = response.data;
+        })
+        .catch(function(error) {
+          console.error('Error fetching items:', error);
+        });
+
+      $http.get('API_URL/categories/' + categoryId)
+        .then(function(response) {
+          $scope.selectedCategory = response.data;
+        })
+        .catch(function(error) {
+          console.error('Error fetching category:', error);
+        });
+    });
+  </script>
 </head>
-<body ng-controller="MenuSearchController as menuCtrl">
-  <div class="container">
-    <h1>Narrow Down Your Menu Choice</h1>
 
-    <div class="form-group">
-      <input type="text" placeholder="Search term" class="form-control" ng-model="menuCtrl.searchTerm">
-    </div>
-    <div class="form-group narrow-button">
-      <button class="btn btn-primary" ng-click="menuCtrl.narrowDown()">Narrow It Down For Me!</button>
-    </div>
-
-    <ul ng-if="menuCtrl.foundItems.length > 0">
-      <li ng-repeat="item in menuCtrl.foundItems">
-        {{ item.name }}, {{ item.short_name }}, {{ item.description }}
-        <button class="btn btn-danger" ng-click="menuCtrl.removeItem($index)">Don't want this one!</button>
-      </li>
-    </ul>
-
-    <div ng-if="menuCtrl.foundItems.length === 0 && menuCtrl.searchTerm !== ''">
-      Nothing found
-    </div>
-  </div>
+<body>
+  <div ng-view></div>
 </body>
+
 </html>

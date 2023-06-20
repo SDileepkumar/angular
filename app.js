@@ -1,57 +1,61 @@
-(function() {
-  'use strict';
+var app = angular.module('restaurantApp', []);
 
-  angular.module('MenuSearchApp', [])
-    .controller('MenuSearchController', MenuSearchController)
-    .service('MenuSearchService', MenuSearchService);
+app.config(function($routeProvider) {
+  $routeProvider
+    .when('/', {
+      template: '',
+      controller: 'HomeController'
+    })
+    .when('/categories', {
+      template: '',
+      controller: 'CategoriesController'
+    })
+    .when('/items/:categoryId', {
+      template: '',
+      controller: 'ItemsController'
+    })
+    .otherwise({
+      redirectTo: '/'
+    });
+});
 
-  MenuSearchController.$inject = ['MenuSearchService'];
-  function MenuSearchController(MenuSearchService) {
-    var menuCtrl = this;
-    menuCtrl.searchTerm = '';
-    menuCtrl.foundItems = [];
+app.controller('HomeController', function($scope) {
+  $scope.showCategories = true;
+  $scope.showItems = false;
+});
 
-    menuCtrl.narrowDown = function() {
-      if (menuCtrl.searchTerm.trim() !== '') {
-        var promise = MenuSearchService.getMatchedMenuItems(menuCtrl.searchTerm);
-        promise.then(function(response) {
-          menuCtrl.foundItems = response;
-        })
-        .catch(function(error) {
-          console.log('Error:', error);
-        });
-      } else {
-        menuCtrl.foundItems = [];
-      }
-    };
+app.controller('CategoriesController', function($scope, $http) {
+  $http.get('API_URL/categories')
+    .then(function(response) {
+      $scope.categories = response.data;
+    })
+    .catch(function(error) {
+      console.error('Error fetching categories:', error);
+    });
 
-    menuCtrl.removeItem = function(index) {
-      menuCtrl.foundItems.splice(index, 1);
-    };
-  }
+  $scope.showCategories = true;
+  $scope.showItems = false;
+});
 
-  MenuSearchService.$inject = ['$http'];
-  function MenuSearchService($http) {
-    var service = this;
+app.controller('ItemsController', function($scope, $http, $routeParams) {
+  var categoryId = $routeParams.categoryId;
 
-    service.getMatchedMenuItems = function(searchTerm) {
-      return $http({
-        method: 'GET',
-        url: 'http://davids-restaurant.herokuapp.com/menu_items.json'
-      })
-      .then(function(response) {
-        var foundItems = [];
-        var menuItems = response.data;
+  $http.get('API_URL/items?categoryId=' + categoryId)
+    .then(function(response) {
+      $scope.items = response.data;
+    })
+    .catch(function(error) {
+      console.error('Error fetching items:', error);
+    });
 
-        for (var i = 0; i < menuItems.length; i++) {
-          var description = menuItems[i].description;
-          if (description.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1) {
-            foundItems.push(menuItems[i]);
-          }
-        }
+  $http.get('API_URL/categories/' + categoryId)
+    .then(function(response) {
+      $scope.selectedCategory = response.data;
+    })
+    .catch(function(error) {
+      console.error('Error fetching category:', error);
+    });
 
-        return foundItems;
-      });
-    };
-  }
-})();
+  $scope.showCategories = false;
+  $scope.showItems = true;
+});
