@@ -1,0 +1,19 @@
+<div>
+  <h2>Sign Up</h2>
+  <form name="signupForm" ng-submit="submitForm()" novalidate>
+    <div>
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" name="firstName" ng-model="user.firstName" ng-required="true">
+      <span ng-show="signupForm.firstName.$error.required && signupForm.firstName.$dirty">First Name is required.</span>
+    </div>
+    <!-- Repeat the above code for last name, email, phone number, and favorite dish -->
+    <div>
+      <label for="favoriteDish">Favorite Dish</label>
+      <input type="text" id="favoriteDish" name="favoriteDish" ng-model="user.favoriteDish" ng-required="true" ng-model-options="{ debounce: 500 }" ng-change="validateFavoriteDish()">
+      <span ng-show="signupForm.favoriteDish.$error.required && signupForm.favoriteDish.$dirty">Favorite Dish is required.</span>
+      <span ng-show="!validFavoriteDish">No such menu number exists.</span>
+    </div>
+    <button type="submit" ng-disabled="signupForm.$invalid">Submit</button>
+  </form>
+  <div ng-show="signupSuccess">Your information has been saved.</div>
+</div>
